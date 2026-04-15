@@ -22,7 +22,7 @@ Extension Chrome tout-en-un pour automatiser des clics sur n'importe quel site w
 |------|-------------|
 | **Clic unique** | Clique en boucle sur un seul element |
 | **Chemin de clics** | Enregistre une sequence de clics et la rejoue en boucle |
-| **Flamachou Shiny** | Mode specialise pour la chasse au shiny sur elmatte0.fr |
+| **Flamoutan Shiny** | Mode specialise pour la chasse au shiny sur elmatte0.fr |
 | **Anti-AFK** | Bouge la souris et clique aleatoirement pour rester actif |
 
 ---
@@ -71,13 +71,13 @@ Enregistre une sequence de clics sur plusieurs elements, puis les rejoue en bouc
 
 ---
 
-## Mode : Flamachou Shiny Hunter
+## Mode : Flamoutan Shiny Hunter
 
-Mode specialise pour la chasse au Flamachou shiny sur [elmatte0.fr](https://elmatte0.fr).
+Mode specialise pour la chasse au Flamoutan shiny sur [elmatte0.fr](https://elmatte0.fr).
 
 ### Concept
 
-Le site permet de "reset" un badge Flamachou. Le shiny est une variante rare avec des couleurs differentes. Ce mode automatise le processus de reset et detecte automatiquement quand le shiny apparait.
+Le site permet de "reset" un badge Flamoutan. Le shiny est une variante rare avec des couleurs differentes. Ce mode automatise le processus de reset et detecte automatiquement quand le shiny apparait.
 
 ### Configuration
 
@@ -100,7 +100,7 @@ La zone shiny fonctionne en 2 phases :
 - **Son d'alerte** (melodie de victoire en 6 notes)
 - **Badge "!!!"** dore sur l'icone de l'extension
 
-### Flamachou normal vs shiny
+### Flamoutan normal vs shiny
 
 | | Normal | Shiny |
 |---|--------|-------|
@@ -169,9 +169,9 @@ Auto-Clicker/
     icon16.png         # Icone 16x16 (curseur + ondes)
     icon48.png         # Icone 48x48
     icon128.png        # Icone 128x128
-  test-shiny.html      # Page de test pour le mode Flamachou
-  shiny.png            # Image Flamachou shiny
-  pas shiny.png        # Image Flamachou normal
+  test-shiny.html      # Page de test pour le mode Flamoutan
+  shiny.png            # Image Flamoutan shiny
+  pas shiny.png        # Image Flamoutan normal
 ```
 
 ### Permissions
@@ -224,7 +224,7 @@ Compatible avec tous les sites, y compris ceux qui utilisent Tailwind CSS (class
 
 Le fichier `test-shiny.html` simule le comportement d'elmatte0.fr :
 
-- Badge Flamachou avec les vraies images (normal / shiny)
+- Badge Flamoutan avec les vraies images (normal / shiny)
 - Bouton **Reset** avec cooldown de 3 secondes
 - **1/1000** de chance de shiny a chaque reset
 - Bouton **securite** qui apparait 1 fois sur 5 (doit etre clique en 3s)
