@@ -246,4 +246,4 @@ Le fichier `test-shiny.html` simule le comportement d'elmatte0.fr :
 - Le bandeau jaune **"Auto-Clicker a commence le debogage"** est normal, c'est l'API debugger. Ne pas le fermer pendant l'utilisation.
 - L'extension fonctionne sur **tous les sites** sauf les pages protegees (`chrome://`, `chrome-extension://`).
 - Les parametres (selecteurs, vitesse, mode) sont **sauvegardes** entre les sessions.
-- Chaque mode a sa propre **couleur** dans l'indicateur d'onglet : violet (clic), violet (chemin), dore (shiny), rouge (anti-afk).
+- Chaque mode a sa propre **couleur** dans l'indicateur d'onglet : violet (clic), bleu (chemin), dore (shiny), rouge (anti-afk).
