@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Flamachou Shiny</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", sans-serif;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 20px;
+    }
+    h1 {
+      font-size: 24px;
+      background: linear-gradient(135deg, #a78bfa, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .badge-container {
+      width: 240px;
+      height: 260px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .badge-wrapper {
+      position: relative;
+      width: 180px;
+      height: 200px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .badge-wrapper.shiny-active {
+      filter: drop-shadow(0 0 12px rgba(247,186,119,0.5)) drop-shadow(0 0 25px rgba(247,186,119,0.3));
+      animation: shiny-glow 0.6s ease-in-out infinite alternate;
+    }
+    @keyframes shiny-glow {
+      from { transform: scale(1); }
+      to { transform: scale(1.03); }
+    }
+    .badge-img {
+      max-width: 100%;
+      max-height: 100%;
+      image-rendering: pixelated;
+    }
+
+    .shiny-label {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      background: linear-gradient(135deg, #f7ba77, #e8945a);
+      color: #000;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      display: none;
+      box-shadow: 0 2px 10px rgba(247,186,119,0.5);
+    }
+    .shiny-label.visible {
+      display: block;
+      animation: bounce 0.5s ease infinite alternate;
+    }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+
+    .sparkles {
+      position: absolute;
+      inset: -20px;
+      pointer-events: none;
+      display: none;
+    }
+    .sparkles.visible { display: block; }
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 1px;
+      background: #fde68a;
+      animation: sparkle-anim 1.2s ease-in-out infinite;
+    }
+    .sparkle::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 2px; height: 14px;
+      background: #fde68a;
+      transform: translate(-50%,-50%);
+      border-radius: 1px;
+    }
+    .sparkle::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 14px; height: 2px;
+      background: #fde68a;
+      transform: translate(-50%,-50%);
+      border-radius: 1px;
+    }
+    .sparkle:nth-child(1) { top: 5%; left: 5%; animation-delay: 0s; }
+    .sparkle:nth-child(2) { top: 0%; right: 15%; animation-delay: 0.4s; }
+    .sparkle:nth-child(3) { bottom: 20%; left: 8%; animation-delay: 0.7s; }
+    .sparkle:nth-child(4) { bottom: 10%; right: 5%; animation-delay: 0.2s; }
+    .sparkle:nth-child(5) { top: 40%; left: -5%; animation-delay: 0.9s; }
+    .sparkle:nth-child(6) { top: 35%; right: -5%; animation-delay: 0.5s; }
+    @keyframes sparkle-anim {
+      0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1) rotate(30deg); }
+    }
+
+    .reset-btn {
+      padding: 14px 40px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7c3aed, #6366f1);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .reset-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.15); }
+    .reset-btn:active:not(:disabled) { transform: translateY(0); }
+    .reset-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      filter: none;
+    }
+    .reset-btn .cooldown-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: #a78bfa;
+      width: 0%;
+      transition: none;
+    }
+    .reset-btn .cooldown-bar.active {
+      width: 100%;
+      transition: width 3s linear;
+    }
+
+    .safe-btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: none;
+      animation: safe-pulse 0.4s ease-in-out infinite alternate;
+    }
+    .safe-btn.visible { display: block; }
+    @keyframes safe-pulse {
+      from { box-shadow: 0 0 10px rgba(239,68,68,0.5); }
+      to { box-shadow: 0 0 25px rgba(239,68,68,0.8); }
+    }
+
+    .stats {
+      font-size: 13px;
+      color: #71717a;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .stats span { color: #a78bfa; font-weight: 700; }
+
+    .config {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 12px;
+      color: #52525b;
+      max-width: 350px;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .config b { color: #a78bfa; }
+
+    .debug-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .debug-btn {
+      padding: 8px 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      color: #a1a1aa;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .debug-btn:hover {
+      border-color: rgba(139,92,246,0.4);
+      color: #fff;
+      background: rgba(139,92,246,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Simulateur Flamachou</h1>
+
+  <div class="badge-container" id="badgeZone">
+    <div class="badge-wrapper" id="badgeWrapper">
+      <img class="badge-img" id="badge" src="pas shiny.png" alt="Flamachou"/>
+
+      <div class="sparkles" id="sparkles">
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+      </div>
+    </div>
+    <span class="shiny-label" id="shinyLabel">SHINY !</span>
+  </div>
+
+  <button class="reset-btn" id="resetBtn">Reset le badge<span class="cooldown-bar" id="cooldownBar"></span></button>
+  <button class="safe-btn" id="safeBtn">GARDER LE BADGE !</button>
+
+  <div class="stats">
+    Resets : <span id="resetCount">0</span><br>
+    Chance shiny : <span>1/1000</span> (0.1%)<br>
+    Bouton securite : <span>apparait 1 fois sur 5</span>
+  </div>
+
+  <div class="debug-btns">
+    <button class="debug-btn" id="forceShinyBtn">Forcer shiny</button>
+    <button class="debug-btn" id="forceSafeBtn">Forcer bouton securite</button>
+    <button class="debug-btn" id="resetAllBtn">Tout reinitialiser</button>
+  </div>
+
+  <div class="config">
+    <b>Comment tester :</b><br>
+    1. Ouvre l'extension > onglet <b>Flamachou</b><br>
+    2. <b>Bouton Reset</b> = le bouton violet "Reset le badge"<br>
+    3. <b>Bouton Securite</b> = clique "Forcer bouton securite" puis choisis-le<br>
+    4. <b>Zone Shiny</b> = dessine un rectangle autour du Flamachou<br>
+    5. Lance le hunt !
+  </div>
+
+  <script>
+    const badgeWrapper = document.getElementById("badgeWrapper");
+    const shinyLabel = document.getElementById("shinyLabel");
+    const sparkles = document.getElementById("sparkles");
+    const resetBtn = document.getElementById("resetBtn");
+    const safeBtn = document.getElementById("safeBtn");
+    const resetCountEl = document.getElementById("resetCount");
+    const cooldownBar = document.getElementById("cooldownBar");
+    let resetCount = 0;
+    let isShiny = false;
+    let safeTimeout = null;
+    let cooldownActive = false;
+
+    const badge = document.getElementById("badge");
+
+    function setNormal() {
+      isShiny = false;
+      badge.src = "pas shiny.png";
+      badgeWrapper.classList.remove("shiny-active");
+      shinyLabel.classList.remove("visible");
+      sparkles.classList.remove("visible");
+    }
+
+    function setShiny() {
+      isShiny = true;
+      badge.src = "shiny.png";
+      badgeWrapper.classList.add("shiny-active");
+      shinyLabel.classList.add("visible");
+      sparkles.classList.add("visible");
+    }
+
+    function startCooldown() {
+      cooldownActive = true;
+      resetBtn.disabled = true;
+      cooldownBar.classList.remove("active");
+      // Force reflow
+      void cooldownBar.offsetWidth;
+      cooldownBar.classList.add("active");
+      setTimeout(() => {
+        cooldownActive = false;
+        resetBtn.disabled = false;
+        cooldownBar.classList.remove("active");
+      }, 3000);
+    }
+
+    resetBtn.addEventListener("click", () => {
+      if (cooldownActive) return;
+
+      resetCount++;
+      resetCountEl.textContent = resetCount;
+
+      safeBtn.classList.remove("visible");
+      if (safeTimeout) clearTimeout(safeTimeout);
+
+      if (Math.random() < 0.001) {
+        setShiny();
+      } else {
+        setNormal();
+      }
+
+      // Cooldown de 3s
+      startCooldown();
+
+      if (Math.random() < 0.2) {
+        const delay = 1000 + Math.random() * 2000;
+        safeTimeout = setTimeout(() => {
+          safeBtn.classList.add("visible");
+          setTimeout(() => {
+            if (safeBtn.classList.contains("visible")) {
+              safeBtn.classList.remove("visible");
+              badge.style.filter = "grayscale(1) brightness(0.3)";
+              badgeWrapper.classList.remove("shiny-active");
+              shinyLabel.classList.remove("visible");
+              sparkles.classList.remove("visible");
+              setTimeout(() => { badge.style.filter = ""; setNormal(); }, 1000);
+            }
+          }, 3000);
+        }, delay);
+      }
+    });
+
+    safeBtn.addEventListener("click", () => {
+      safeBtn.classList.remove("visible");
+    });
+
+    document.getElementById("forceShinyBtn").addEventListener("click", setShiny);
+    document.getElementById("forceSafeBtn").addEventListener("click", () => safeBtn.classList.add("visible"));
+    document.getElementById("resetAllBtn").addEventListener("click", () => {
+      resetCount = 0;
+      resetCountEl.textContent = "0";
+      setNormal();
+      safeBtn.classList.remove("visible");
+      if (safeTimeout) clearTimeout(safeTimeout);
+    });
+  </script>
+</body>
+</html>
