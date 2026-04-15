@@ -23,10 +23,8 @@ const shinyStatus = document.getElementById("shinyStatus");
 
 // Shiny elements
 const shinyPickReset = document.getElementById("shinyPickReset");
-const shinyPickSafe = document.getElementById("shinyPickSafe");
 const shinyPickZone = document.getElementById("shinyPickZone");
 const shinyResetInfo = document.getElementById("shinyResetInfo");
-const shinySafeInfo = document.getElementById("shinySafeInfo");
 const shinyZoneInfo = document.getElementById("shinyZoneInfo");
 const shinyClearBtn = document.getElementById("shinyClearBtn");
 
@@ -56,7 +54,6 @@ let countTimer = null;
 
 // Shiny state
 let shinyResetSel = "";
-let shinySafeSel = "";
 let shinyZone = null; // { x, y, w, h } zone shiny
 let shinyPickTarget = null;
 
@@ -435,12 +432,6 @@ function updateShinyUI() {
     shinyPickReset.textContent = "Changer le bouton reset";
     shinyPickReset.classList.add("picked");
   }
-  if (shinySafeSel) {
-    shinySafeInfo.textContent = shinySafeSel.split(" > ").pop();
-    shinySafeInfo.classList.remove("hidden");
-    shinyPickSafe.textContent = "Changer le bouton securite";
-    shinyPickSafe.classList.add("picked");
-  }
   if (shinyZone) {
     shinyZoneInfo.textContent = shinyZone.w + "x" + shinyZone.h + " px (position " + shinyZone.x + "," + shinyZone.y + ")";
     shinyZoneInfo.classList.remove("hidden");
@@ -448,7 +439,7 @@ function updateShinyUI() {
     shinyPickZone.classList.add("picked");
   }
   chrome.storage.local.set({
-    shinyResetSel, shinySafeSel, shinyZone
+    shinyResetSel, shinyZone
   });
   updateUI();
 }
@@ -466,13 +457,13 @@ function startPolling() {
       shinyStatus.className = "shiny-badge found";
       shinyStatus.classList.remove("hidden");
       clickCountEl.textContent = (data.clickCount || 0) + " resets";
-      statusDot.className = "dot on";
-      statusText.textContent = "Securite active";
-      toggleBtn.textContent = "Arreter la securite";
-      toggleBtn.className = "btn-toggle on";
-      toggleBtn.disabled = false;
-      isRunning = true;
-      // On ne stop pas le polling, la securite tourne encore
+      clickCountEl.classList.remove("hidden");
+      statusDot.className = "dot off";
+      statusText.textContent = "Shiny detecte !";
+      isRunning = false;
+      chrome.storage.local.set({ shinyFound: false });
+      updateUI();
+      stopPolling();
     } else if (data.running) {
       clickCountEl.textContent = (data.clickCount || 0) + (currentTab === "shiny" ? " resets" : " clics");
     } else {
@@ -565,12 +556,6 @@ shinyPickReset.addEventListener("click", async () => {
   window.close();
 });
 
-shinyPickSafe.addEventListener("click", async () => {
-  await new Promise(r => chrome.storage.local.set({ shinyPickTarget: "safe" }, r));
-  await runInPage(injectedStartPicker, ["Cliquez sur le BOUTON DE SECURITE (Echap pour annuler)", "#eab308"]);
-  window.close();
-});
-
 shinyPickZone.addEventListener("click", async () => {
   await new Promise(r => chrome.storage.local.set({ shinyPickTarget: "zone" }, r));
   await runInPage(injectedStartZonePicker);
@@ -579,18 +564,14 @@ shinyPickZone.addEventListener("click", async () => {
 
 shinyClearBtn.addEventListener("click", () => {
   shinyResetSel = "";
-  shinySafeSel = "";
   shinyZone = null;
   shinyResetInfo.classList.add("hidden");
-  shinySafeInfo.classList.add("hidden");
   shinyZoneInfo.classList.add("hidden");
   shinyPickReset.textContent = "Choisir le bouton reset";
   shinyPickReset.classList.remove("picked");
-  shinyPickSafe.textContent = "Choisir le bouton securite";
-  shinyPickSafe.classList.remove("picked");
   shinyPickZone.textContent = "Dessiner la zone shiny";
   shinyPickZone.classList.remove("picked");
-  chrome.storage.local.set({ shinyResetSel: "", shinySafeSel: "", shinyZone: null });
+  chrome.storage.local.set({ shinyResetSel: "", shinyZone: null });
   updateUI();
 });
 
@@ -705,7 +686,6 @@ toggleBtn.addEventListener("click", async () => {
         command: {
           action: "startShiny", tabId,
           resetSelector: shinyResetSel,
-          safeSelector: shinySafeSel,
           shinyZone: shinyZone,
           interval: selectedInterval
         }
@@ -734,7 +714,7 @@ toggleBtn.addEventListener("click", async () => {
   const data = await chrome.storage.local.get([
     "selector", "interval", "clickMode", "running",
     "currentTab", "pathSelectors",
-    "shinyResetSel", "shinySafeSel", "shinyZone", "shinyPickTarget"
+    "shinyResetSel", "shinyZone", "shinyPickTarget"
   ]);
 
   if (data.interval) selectedInterval = data.interval;
@@ -743,7 +723,6 @@ toggleBtn.addEventListener("click", async () => {
   if (data.pathSelectors) pathSelectors = data.pathSelectors;
   if (data.currentTab) currentTab = data.currentTab;
   if (data.shinyResetSel) shinyResetSel = data.shinyResetSel;
-  if (data.shinySafeSel) shinySafeSel = data.shinySafeSel;
   if (data.shinyZone) shinyZone = data.shinyZone;
 
   // Verifie si le picker a choisi un element
@@ -758,9 +737,6 @@ toggleBtn.addEventListener("click", async () => {
   } else if (picked) {
     if (target === "reset") {
       shinyResetSel = picked;
-      currentTab = "shiny";
-    } else if (target === "safe") {
-      shinySafeSel = picked;
       currentTab = "shiny";
     } else {
       // "single" ou null → clic unique

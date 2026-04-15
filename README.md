@@ -84,7 +84,6 @@ Le site permet de "reset" un badge Flamachou. Le shiny est une variante rare ave
 | Element | Quoi faire | Role |
 |---------|-----------|------|
 | **Bouton Reset** | Cliquer pour choisir le bouton de reset | Spam en boucle pour reroll le badge |
-| **Bouton Securite** | Cliquer pour choisir le bouton de securite | Surveille toutes les 150ms, clic instantane quand il apparait |
 | **Zone Shiny** | Dessiner un rectangle autour du badge | Detecte quand le badge change (shiny detecte) |
 
 ### Detection du shiny
@@ -97,7 +96,6 @@ La zone shiny fonctionne en 2 phases :
 ### Quand le shiny est detecte
 
 - Les resets **s'arretent** immediatement
-- La surveillance du **bouton securite continue** (protege le shiny)
 - **Notification systeme** Windows avec le nombre de resets
 - **Son d'alerte** (melodie de victoire en 6 notes)
 - **Badge "!!!"** dore sur l'icone de l'extension

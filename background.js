@@ -353,52 +353,13 @@ async function startPathClicker(tabId, path, interval, clickMode) {
 // Mode Flamachou Shiny
 // ============================
 // 1. Clique le bouton reset en boucle
-// 2. A chaque tick, verifie si le bouton de securite est visible → clique dessus immediatement
-// 3. Si le detecteur shiny est visible → STOP, shiny trouve !
+// 2. Detecte quand la zone shiny change → STOP, shiny trouve !
 
 let shinyResetSel = "";
-let shinySafeSel = "";
-let shinyZone = null; // { x, y, w, h } zone de detection shiny
+let shinyZone = null;
 let shinyTabId = null;
-let shinySafeTimer = null;
 let shinyZoneTimer = null;
-let shinyZoneSnapshot = null; // snapshot initial de la zone
-
-// Verifie si un element existe sur la page
-async function elementExists(tabId, selector) {
-  if (!selector) return false;
-  try {
-    const results = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: function (sel) {
-        var el = document.querySelector(sel);
-        if (!el) return false;
-        var rect = el.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0;
-      },
-      args: [selector]
-    });
-    return results?.[0]?.result || false;
-  } catch (e) {
-    return false;
-  }
-}
-
-// Surveillance du bouton de securite (par selecteur)
-function startSafetyWatch(tabId, safeSelector) {
-  if (!safeSelector) return;
-  stopSafetyWatch();
-
-  shinySafeTimer = setInterval(async () => {
-    if (!isAttached) return;
-    const pos = await getElementPosition(tabId, safeSelector);
-    if (pos) {
-      const ox = Math.round((Math.random() - 0.5) * 4);
-      const oy = Math.round((Math.random() - 0.5) * 4);
-      await sendRealClick(tabId, pos.x + ox, pos.y + oy, "single");
-    }
-  }, 150);
-}
+let shinyZoneSnapshot = null;
 
 // Prend un snapshot de la zone : classes CSS, nombre d'elements, attributs visuels
 async function takeZoneSnapshot(tabId, zone) {
@@ -471,17 +432,15 @@ async function shinyZoneCheck(tabId) {
 
   if (newClasses.length > 0 || newTexts.length > 0) {
     // SHINY TROUVE !
-    // Stop les resets MAIS garde la surveillance du bouton securite
-    if (clickTimer) {
-      clearInterval(clickTimer);
-      clickTimer = null;
-    }
     shinyZoneRef = null;
-    chrome.storage.local.set({ shinyFound: true, clickCount: clickCount, running: false });
+    chrome.storage.local.set({ shinyFound: true, clickCount: clickCount });
 
     // Son + notification + badge dore
     setBadgeShiny();
     playShinyAlert();
+
+    // Stop tout
+    stopClicker();
   }
 }
 
@@ -500,13 +459,6 @@ function stopShinyZoneWatch() {
   knownClasses = new Set();
   knownTexts = new Set();
   shinyLearning = true;
-}
-
-function stopSafetyWatch() {
-  if (shinySafeTimer) {
-    clearInterval(shinySafeTimer);
-    shinySafeTimer = null;
-  }
 }
 
 async function doShinyClick(tabId) {
@@ -554,19 +506,17 @@ async function doShinyClick(tabId) {
   clicking = false;
 }
 
-async function startShinyHunter(tabId, resetSel, safeSel, zone, interval) {
+async function startShinyHunter(tabId, resetSel, zone, interval) {
   if (clickTimer) {
     clearInterval(clickTimer);
     clickTimer = null;
   }
-  stopSafetyWatch();
   stopShinyZoneWatch();
 
   clickCount = 0;
   clicking = false;
   missedClicks = 0;
   shinyResetSel = resetSel;
-  shinySafeSel = safeSel;
   shinyZone = zone;
   shinyTabId = tabId;
 
@@ -578,8 +528,6 @@ async function startShinyHunter(tabId, resetSel, safeSel, zone, interval) {
 
   chrome.storage.local.set({ running: true, clickCount: 0, lastError: "", shinyFound: false });
 
-  // Lance la surveillance du bouton securite
-  startSafetyWatch(tabId, safeSel);
   // Lance la surveillance de la zone shiny
   startShinyZoneWatch(tabId, zone);
 
@@ -602,7 +550,6 @@ async function startShinyHunter(tabId, resetSel, safeSel, zone, interval) {
 // Override stopClicker pour aussi arreter la surveillance
 const _origStop = stopClicker;
 stopClicker = function () {
-  stopSafetyWatch();
   stopShinyZoneWatch();
   if (afkTimer) { clearInterval(afkTimer); afkTimer = null; }
   _origStop();
@@ -688,7 +635,7 @@ chrome.storage.onChanged.addListener((changes) => {
     } else if (cmd.action === "startPath") {
       startPathClicker(cmd.tabId, cmd.path, cmd.interval, cmd.clickMode);
     } else if (cmd.action === "startShiny") {
-      startShinyHunter(cmd.tabId, cmd.resetSelector, cmd.safeSelector, cmd.shinyZone, cmd.interval);
+      startShinyHunter(cmd.tabId, cmd.resetSelector, cmd.shinyZone, cmd.interval);
     } else if (cmd.action === "startAfk") {
       startAfk(cmd.tabId, cmd.afkMode, cmd.interval);
     } else if (cmd.action === "stop") {
