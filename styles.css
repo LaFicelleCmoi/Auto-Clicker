@@ -606,16 +606,35 @@ h1 {
   letter-spacing: 0.3px;
 }
 
-.btn-toggle.off {
-  background: linear-gradient(135deg, #059669, #10b981);
+/* Couleur par mode */
+.btn-toggle.off-single {
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
   color: #fff;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
 }
 
-.btn-toggle.on {
+.btn-toggle.off-path {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-toggle.off-shiny {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+}
+
+.btn-toggle.off-afk {
   background: linear-gradient(135deg, #dc2626, #ef4444);
   color: #fff;
   box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-toggle.on {
+  background: linear-gradient(135deg, #52525b, #71717a);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(113, 113, 122, 0.3);
 }
 
 .btn-toggle:disabled {

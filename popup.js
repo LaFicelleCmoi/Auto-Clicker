@@ -380,8 +380,9 @@ function updateUI() {
     statusText.textContent = currentTab === "shiny" ? "Shiny hunting..." : "En cours...";
     clickCountEl.classList.remove("hidden");
   } else {
-    toggleBtn.textContent = currentTab === "shiny" ? "Lancer le hunt" : currentTab === "afk" ? "Activer Anti-AFK" : "Demarrer";
-    toggleBtn.className = "btn-toggle off";
+    const labels = { single: "Demarrer", path: "Demarrer", shiny: "Lancer le hunt", afk: "Activer Anti-AFK" };
+    toggleBtn.textContent = labels[currentTab] || "Demarrer";
+    toggleBtn.className = "btn-toggle off-" + currentTab;
     toggleBtn.disabled = !hasTarget;
     statusDot.className = "dot off";
     statusText.textContent = hasTarget ? "Pret" : "Configurez d'abord";
