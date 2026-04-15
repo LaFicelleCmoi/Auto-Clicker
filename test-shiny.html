@@ -156,25 +156,6 @@
       transition: width 3s linear;
     }
 
-    .safe-btn {
-      padding: 12px 30px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #dc2626, #ef4444);
-      color: white;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      display: none;
-      animation: safe-pulse 0.4s ease-in-out infinite alternate;
-    }
-    .safe-btn.visible { display: block; }
-    @keyframes safe-pulse {
-      from { box-shadow: 0 0 10px rgba(239,68,68,0.5); }
-      to { box-shadow: 0 0 25px rgba(239,68,68,0.8); }
-    }
-
     .stats {
       font-size: 13px;
       color: #71717a;
@@ -239,27 +220,23 @@
   </div>
 
   <button class="reset-btn" id="resetBtn">Reset le badge<span class="cooldown-bar" id="cooldownBar"></span></button>
-  <button class="safe-btn" id="safeBtn">GARDER LE BADGE !</button>
 
   <div class="stats">
     Resets : <span id="resetCount">0</span><br>
-    Chance shiny : <span>1/1000</span> (0.1%)<br>
-    Bouton securite : <span>apparait 1 fois sur 5</span>
+    Chance shiny : <span>1/1000</span> (0.1%)
   </div>
 
   <div class="debug-btns">
     <button class="debug-btn" id="forceShinyBtn">Forcer shiny</button>
-    <button class="debug-btn" id="forceSafeBtn">Forcer bouton securite</button>
     <button class="debug-btn" id="resetAllBtn">Tout reinitialiser</button>
   </div>
 
   <div class="config">
     <b>Comment tester :</b><br>
-    1. Ouvre l'extension > onglet <b>Flamachou</b><br>
+    1. Ouvre l'extension > onglet <b>Shiny</b><br>
     2. <b>Bouton Reset</b> = le bouton violet "Reset le badge"<br>
-    3. <b>Bouton Securite</b> = clique "Forcer bouton securite" puis choisis-le<br>
-    4. <b>Zone Shiny</b> = dessine un rectangle autour du Flamachou<br>
-    5. Lance le hunt !
+    3. <b>Zone Shiny</b> = dessine un rectangle autour du Flamachou<br>
+    4. Lance le hunt !
   </div>
 
   <script>
@@ -267,15 +244,12 @@
     const shinyLabel = document.getElementById("shinyLabel");
     const sparkles = document.getElementById("sparkles");
     const resetBtn = document.getElementById("resetBtn");
-    const safeBtn = document.getElementById("safeBtn");
     const resetCountEl = document.getElementById("resetCount");
     const cooldownBar = document.getElementById("cooldownBar");
+    const badge = document.getElementById("badge");
     let resetCount = 0;
     let isShiny = false;
-    let safeTimeout = null;
     let cooldownActive = false;
-
-    const badge = document.getElementById("badge");
 
     function setNormal() {
       isShiny = false;
@@ -297,7 +271,6 @@
       cooldownActive = true;
       resetBtn.disabled = true;
       cooldownBar.classList.remove("active");
-      // Force reflow
       void cooldownBar.offsetWidth;
       cooldownBar.classList.add("active");
       setTimeout(() => {
@@ -313,48 +286,20 @@
       resetCount++;
       resetCountEl.textContent = resetCount;
 
-      safeBtn.classList.remove("visible");
-      if (safeTimeout) clearTimeout(safeTimeout);
-
       if (Math.random() < 0.001) {
         setShiny();
       } else {
         setNormal();
       }
 
-      // Cooldown de 3s
       startCooldown();
-
-      if (Math.random() < 0.2) {
-        const delay = 1000 + Math.random() * 2000;
-        safeTimeout = setTimeout(() => {
-          safeBtn.classList.add("visible");
-          setTimeout(() => {
-            if (safeBtn.classList.contains("visible")) {
-              safeBtn.classList.remove("visible");
-              badge.style.filter = "grayscale(1) brightness(0.3)";
-              badgeWrapper.classList.remove("shiny-active");
-              shinyLabel.classList.remove("visible");
-              sparkles.classList.remove("visible");
-              setTimeout(() => { badge.style.filter = ""; setNormal(); }, 1000);
-            }
-          }, 3000);
-        }, delay);
-      }
-    });
-
-    safeBtn.addEventListener("click", () => {
-      safeBtn.classList.remove("visible");
     });
 
     document.getElementById("forceShinyBtn").addEventListener("click", setShiny);
-    document.getElementById("forceSafeBtn").addEventListener("click", () => safeBtn.classList.add("visible"));
     document.getElementById("resetAllBtn").addEventListener("click", () => {
       resetCount = 0;
       resetCountEl.textContent = "0";
       setNormal();
-      safeBtn.classList.remove("visible");
-      if (safeTimeout) clearTimeout(safeTimeout);
     });
   </script>
 </body>
