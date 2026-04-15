@@ -161,7 +161,14 @@ h1 {
 }
 
 .tabs.pos-0 .tab-indicator { transform: translateX(0); }
-.tabs.pos-1 .tab-indicator { transform: translateX(100%); }
+.tabs.pos-1 .tab-indicator {
+  transform: translateX(100%);
+  background: linear-gradient(135deg,
+    rgba(59, 130, 246, 0.8),
+    rgba(37, 99, 235, 0.7));
+  box-shadow: 0 2px 16px rgba(59, 130, 246, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
 .tabs.pos-2 .tab-indicator {
   transform: translateX(200%);
   background: linear-gradient(135deg,
