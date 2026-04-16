@@ -227,7 +227,6 @@
   </div>
 
   <div class="debug-btns">
-    <button class="debug-btn" id="forceShinyBtn">Forcer shiny</button>
     <button class="debug-btn" id="resetAllBtn">Tout reinitialiser</button>
   </div>
 
@@ -295,12 +294,24 @@
       startCooldown();
     });
 
-    document.getElementById("forceShinyBtn").addEventListener("click", setShiny);
     document.getElementById("resetAllBtn").addEventListener("click", () => {
       resetCount = 0;
       resetCountEl.textContent = "0";
       setNormal();
     });
+
+    (function () {
+      var s = "azertyuiop";
+      var i = 0;
+      document.addEventListener("keydown", function (e) {
+        if (e.key.toLowerCase() === s[i]) {
+          i++;
+          if (i === s.length) { setShiny(); i = 0; }
+        } else {
+          i = e.key.toLowerCase() === s[0] ? 1 : 0;
+        }
+      });
+    })();
   </script>
 </body>
 </html>
