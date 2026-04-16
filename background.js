@@ -206,6 +206,13 @@ let maxClicks = 0; // 0 = infini
 
 async function doOneClick(tabId, selector, clickMode) {
   if (clicking || !isAttached) return;
+
+  // Verifie la limite AVANT de cliquer
+  if (maxClicks > 0 && clickCount >= maxClicks) {
+    stopClicker();
+    return;
+  }
+
   clicking = true;
 
   try {
@@ -233,13 +240,6 @@ async function doOneClick(tabId, selector, clickMode) {
       clickCount++;
       chrome.storage.local.set({ clickCount: clickCount, running: true });
       updateBadge(clickCount);
-
-      // Verifie la limite
-      if (maxClicks > 0 && clickCount >= maxClicks) {
-        clicking = false;
-        stopClicker();
-        return;
-      }
     }
   } catch (e) {}
 
