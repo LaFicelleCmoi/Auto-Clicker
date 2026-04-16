@@ -514,6 +514,63 @@ h1 {
   box-shadow: 0 2px 12px rgba(99, 102, 241, 0.3);
 }
 
+/* Limite de clics */
+.click-limit-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.limit-btn {
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #71717a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.limit-btn:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #a1a1aa;
+}
+
+.limit-btn.active {
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.3);
+}
+
+.click-limit-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #e4e4e7;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "SF Mono", "Fira Code", monospace;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.click-limit-row input::-webkit-inner-spin-button,
+.click-limit-row input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.click-limit-row input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
 /* Input vitesse */
 .speed-input-row {
   display: flex;

@@ -202,6 +202,8 @@ function stopClicker() {
 // Clic unique
 // ============================
 
+let maxClicks = 0; // 0 = infini
+
 async function doOneClick(tabId, selector, clickMode) {
   if (clicking || !isAttached) return;
   clicking = true;
@@ -231,13 +233,20 @@ async function doOneClick(tabId, selector, clickMode) {
       clickCount++;
       chrome.storage.local.set({ clickCount: clickCount, running: true });
       updateBadge(clickCount);
+
+      // Verifie la limite
+      if (maxClicks > 0 && clickCount >= maxClicks) {
+        clicking = false;
+        stopClicker();
+        return;
+      }
     }
   } catch (e) {}
 
   clicking = false;
 }
 
-async function startClicker(tabId, selector, interval, clickMode) {
+async function startClicker(tabId, selector, interval, clickMode, limit) {
   if (clickTimer) {
     clearInterval(clickTimer);
     clickTimer = null;
@@ -245,6 +254,7 @@ async function startClicker(tabId, selector, interval, clickMode) {
   clickCount = 0;
   clicking = false;
   missedClicks = 0;
+  maxClicks = limit || 0;
 
   const ok = await attach(tabId);
   if (!ok) {
@@ -631,7 +641,7 @@ chrome.storage.onChanged.addListener((changes) => {
     chrome.storage.local.remove("command");
 
     if (cmd.action === "start") {
-      startClicker(cmd.tabId, cmd.selector, cmd.interval, cmd.clickMode);
+      startClicker(cmd.tabId, cmd.selector, cmd.interval, cmd.clickMode, cmd.maxClicks);
     } else if (cmd.action === "startPath") {
       startPathClicker(cmd.tabId, cmd.path, cmd.interval, cmd.clickMode);
     } else if (cmd.action === "startShiny") {

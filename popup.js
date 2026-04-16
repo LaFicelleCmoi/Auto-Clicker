@@ -28,6 +28,10 @@ const shinyResetInfo = document.getElementById("shinyResetInfo");
 const shinyZoneInfo = document.getElementById("shinyZoneInfo");
 const shinyClearBtn = document.getElementById("shinyClearBtn");
 
+// Click limit elements
+const clickLimitInput = document.getElementById("clickLimitInput");
+const limitBtn = document.querySelector(".limit-btn");
+
 // Anti-AFK elements
 const afkMode = document.getElementById("afkMode");
 const afkModeBtns = document.querySelectorAll(".afk-mode-btn");
@@ -549,6 +553,18 @@ clearPathBtn.addEventListener("click", () => {
   chrome.storage.local.set({ pathSelectors: [] });
 });
 
+// --- Limite de clics ---
+
+limitBtn.addEventListener("click", () => {
+  limitBtn.classList.add("active");
+  clickLimitInput.value = "";
+});
+
+clickLimitInput.addEventListener("input", () => {
+  const val = parseInt(clickLimitInput.value);
+  limitBtn.classList.toggle("active", !val || val <= 0);
+});
+
 // --- Evenements Flamachou ---
 
 shinyPickReset.addEventListener("click", async () => {
@@ -666,10 +682,12 @@ toggleBtn.addEventListener("click", async () => {
 
     if (currentTab === "single") {
       if (!currentSelector) return;
+      const limit = parseInt(clickLimitInput.value) || 0;
       chrome.storage.local.set({
         command: {
           action: "start", tabId, selector: currentSelector,
-          interval: selectedInterval, clickMode: selectedMode
+          interval: selectedInterval, clickMode: selectedMode,
+          maxClicks: limit
         }
       });
     } else if (currentTab === "path") {
